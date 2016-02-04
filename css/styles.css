@@ -1,0 +1,54 @@
+body {
+  font: 10px sans-serif;
+  margin: 0 auto;
+  max-width: 800px;
+  width: 100%;
+}
+h1 {
+  font-size: 3em;
+  text-align: center;
+}
+svg {
+  opacity: 0;
+  transition: opacity 0.5s linear;
+}
+.line {
+  fill: none;
+  stroke: #9E9E9E;
+  stroke-width: 1.5px;
+}
+.team {
+  dominant-baseline: central;
+}
+.year-container .year {
+  display: inline-block;
+  text-align: center;
+  width: 4em;
+}
+.hidden {
+  display: none;
+}
+.year-button {
+  border: 1px solid #ADA7A7;
+  border-radius: 3px;
+  color: #ADA7A7;
+  cursor: pointer;
+  float: right;
+  font-size: 1.2em;
+  padding: 0.25em;
+  margin-top: 0.7em;
+}
+.year-container {
+  background: #fff;
+  border: 1px solid #ADA7A7;
+  border-radius: 3px;
+  box-shadow: 0 8px 6px -6px #999;
+  font-size: 1.2em;
+  left: 50%;
+  margin-left: -12em;
+  max-width: 24em;
+  padding: 0.5em 0.25em;
+  position: absolute;
+  top: 5em;
+  width: 100%;
+}
