@@ -3,25 +3,25 @@ import addYears from './year-chooser';
 import labeler from './label-shifter';
 import divisionSorter from './division-sorter';
 
-var body = d3.select("body");
-var fullWidth = 400,
+let body = d3.select("body");
+let fullWidth = 400,
     fullHeight = fullWidth / 2,
     margin = {top: 20, right: 175, bottom: 10, left: 10},
     width = fullWidth - margin.left - margin.right,
     height = fullHeight - margin.top - margin.bottom;
 // Various x coordinate starting points to lay out different pieces of text.
-var winLossX = 51;
-var homeX = 88;
-var roadX = 120;
-var pctX = 152;
-var defaultSize = { width: fullWidth, height: fullHeight };
-var bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
-var hiddenSize = { width: 0 }
-var bigChart, hiddenChart;
-var year = 2015;
-var query = window.location.search.slice(1).split('=');
+let winLossX = 51;
+let homeX = 88;
+let roadX = 120;
+let pctX = 152;
+let defaultSize = { width: fullWidth, height: fullHeight };
+let bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
+let hiddenSize = { width: 0 }
+let bigChart, hiddenChart;
+let year = 2016;
+let query = window.location.search.slice(1).split('=');
 if ( query.length ) {
-  var yearIndex = -1;
+  let yearIndex = -1;
   query.forEach((p, i) => {
     if ( p === 'year' ) {
       yearIndex = i;
@@ -31,7 +31,7 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-var availableYears = d3.range(1919, new Date().getFullYear());
+let availableYears = d3.range(1919, new Date().getFullYear());
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
@@ -39,7 +39,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   if (error) { throw error; }
 
   // Group data by division.
-  var divisions = d3.nest()
+  let divisions = d3.nest()
     .key((d) => d.league)
     .entries(data);
 
@@ -47,17 +47,17 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   divisions = divisionSorter(divisions, constants);
 
   // Need some scales.
-  var x = d3.scale.linear()
+  let x = d3.scale.linear()
     .domain([0, d3.max(data, (d) => d.games)])
     .range([0, width]);
-  var min = d3.min(data, (d) => d3.min(d.results));
-  var max = d3.max(data, (d) => d3.max(d.results));
-  var y = d3.scale.linear()
+  let min = d3.min(data, (d) => d3.min(d.results));
+  let max = d3.max(data, (d) => d3.max(d.results));
+  let y = d3.scale.linear()
     .domain([min, max])
     .range([height, 0]);
 
   // Path generator.
-  var line = d3.svg.line()
+  let line = d3.svg.line()
     .x((d, i) => x(i))
     .y((d, i) => y(d));
 
@@ -65,7 +65,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   divisions = labeler(divisions, y);
 
   // Make one chart (svg) per division.
-  var charts = body.selectAll('svg')
+  let charts = body.selectAll('svg')
     .data(divisions)
     .enter()
     .append('svg')
@@ -117,7 +117,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('d', (d) => line(d.results))
     .style('stroke', (d) => constants.teamColors[d.abbreviation]);
   // Add labels for lines.
-  var labels = charts.selectAll('g')
+  let labels = charts.selectAll('g')
     .data((d) => d.values)
     .enter()
     .append('g')
@@ -127,8 +127,8 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   labels.append('text')
     .attr('x', (d) => {
       // Right-align final result (number like -12, 2, 34, etc.).
-      var result = d.results[d.results.length-1];
-      var position = ( result <= -10 ) ? 0 : 
+      let result = d.results[d.results.length-1];
+      let position = ( result <= -10 ) ? 0 : 
         ( result < 0 ) ? 5 :
         ( result < 10 ) ? 10 : 5;
       return position;
@@ -145,7 +145,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   // W-L record.
   labels.append('text')
     .attr('x', (d) => {
-      var pad = 0;
+      let pad = 0;
       if ( d.wins > 99 || d.losses > 99 ) {
         pad = -5;
       }
