@@ -1,7 +1,13 @@
+import d3 from 'd3';
 import constants from './constants';
 import addYears from './year-chooser';
 import labeler from './label-shifter';
 import divisionSorter from './division-sorter';
+
+if (process.env.NODE_ENV !== 'production') {
+  // http://stackoverflow.com/a/33995496/1934
+  require('../../index.html');
+}
 
 let body = d3.select("body");
 let fullWidth = 400,
