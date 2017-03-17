@@ -1,15 +1,22 @@
-import d3 from 'd3';
+import * as d3selection from 'd3-selection';
+import * as d3array from 'd3-array';
+import * as d3request from 'd3-request';
+import * as d3collection from 'd3-collection';
+import * as d3scale from 'd3-scale';
+import * as d3shape from 'd3-shape';
+
 import constants from './constants';
 import addYears from './year-chooser';
 import labeler from './label-shifter';
 import divisionSorter from './division-sorter';
 
 if (process.env.NODE_ENV !== 'production') {
+  // Make webpack watch for changes to index.html.
   // http://stackoverflow.com/a/33995496/1934
   require('../../index.html');
 }
 
-let body = d3.select("body");
+let body = d3selection.select("body");
 let fullWidth = 400,
     fullHeight = fullWidth / 2,
     margin = {top: 20, right: 175, bottom: 10, left: 10},
@@ -37,15 +44,15 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-let availableYears = d3.range(1919, new Date().getFullYear());
+let availableYears = d3array.range(1919, new Date().getFullYear());
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
-d3.json('seasons-data/' + year + '.json', (error, data) => {
+d3request.json('seasons-data/' + year + '.json', (error, data) => {
   if (error) { throw error; }
 
   // Group data by division.
-  let divisions = d3.nest()
+  let divisions = d3collection.nest()
     .key((d) => d.league)
     .entries(data);
 
@@ -53,17 +60,17 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   divisions = divisionSorter(divisions, constants);
 
   // Need some scales.
-  let x = d3.scale.linear()
-    .domain([0, d3.max(data, (d) => d.games)])
+  let x = d3scale.scaleLinear()
+    .domain([0, d3array.max(data, (d) => d.games)])
     .range([0, width]);
-  let min = d3.min(data, (d) => d3.min(d.results));
-  let max = d3.max(data, (d) => d3.max(d.results));
-  let y = d3.scale.linear()
+  let min = d3array.min(data, (d) => d3array.min(d.results));
+  let max = d3array.max(data, (d) => d3array.max(d.results));
+  let y = d3scale.scaleLinear()
     .domain([min, max])
     .range([height, 0]);
 
   // Path generator.
-  let line = d3.svg.line()
+  let line = d3shape.line()
     .x((d, i) => x(i))
     .y((d, i) => y(d));
 
@@ -180,25 +187,25 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
     .text((d) => (d.wins / d.games).toFixed(3).slice(1));
 
   // See if charts needs to be scaled up or down.
-  let bodyWidth = d3.select('body').style('width').replace('px', '');
+  let bodyWidth = d3selection.select('body').style('width').replace('px', '');
   if ( bodyWidth % 400 !== 0 ) {
     // We are not on a wide screen.
     let scaledHeight = (200 * (bodyWidth / fullHeight)) / 2;
     // Scale svg's appropriately.
-    d3.selectAll('svg').transition().attr({
+    d3selection.selectAll('svg').transition().attr({
       width: bodyWidth,
       height: scaledHeight
     });
     // Take off the click handler that does zoom in/out.
-    d3.selectAll('svg').on('click', null);
+    d3selection.selectAll('svg').on('click', null);
   }
-  d3.selectAll('svg').style('opacity', 1);
+  d3selection.selectAll('svg').style('opacity', 1);
 
   let shrink = (e, callback, next) => {
     if ( hiddenChart ) {
-      d3.select(hiddenChart).transition().attr(defaultSize);
+      d3selection.select(hiddenChart).transition().attr(defaultSize);
     }
-    d3.select(e).transition().attr(defaultSize).each('end', () => {
+    d3selection.select(e).transition().attr(defaultSize).each('end', () => {
       bigChart = hiddenChart = null;
       if ( callback ) {
         callback(next);
@@ -218,9 +225,9 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
       hiddenChart = e.nextSibling;
     }
     bigChart = e;
-    d3.select(e).transition().attr(bigSize);
+    d3selection.select(e).transition().attr(bigSize);
     if ( hiddenChart ) {
-      d3.select(hiddenChart).transition().attr(hiddenSize);
+      d3selection.select(hiddenChart).transition().attr(hiddenSize);
     }
   }
 

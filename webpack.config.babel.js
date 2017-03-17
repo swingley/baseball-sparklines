@@ -7,7 +7,7 @@ let getEntrySources = (sources) => {
   return sources;
 }
 
-module.exports = {
+export default {
   entry: getEntrySources(["./src/js/run.js"]),
   output: {
     path: __dirname,
