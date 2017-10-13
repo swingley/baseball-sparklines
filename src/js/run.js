@@ -192,7 +192,7 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     // We are not on a wide screen.
     let scaledHeight = (200 * (bodyWidth / fullHeight)) / 2;
     // Scale svg's appropriately.
-    d3selection.selectAll('svg').transition().attr({
+    d3selection.selectAll('svg').attr({
       width: bodyWidth,
       height: scaledHeight
     });
