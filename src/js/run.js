@@ -31,7 +31,7 @@ let defaultSize = { width: fullWidth, height: fullHeight };
 let bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
 let hiddenSize = { width: 0 }
 let bigChart, hiddenChart;
-let year = 2016;
+let year = 2017;
 let query = window.location.search.slice(1).split('=');
 if ( query.length ) {
   let yearIndex = -1;
@@ -44,7 +44,7 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-let availableYears = d3array.range(1919, new Date().getFullYear());
+let availableYears = d3array.range(1919, 2018);
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
