@@ -1,27 +1,40 @@
+import * as d3selection from 'd3-selection';
+import * as d3array from 'd3-array';
+import * as d3request from 'd3-request';
+import * as d3collection from 'd3-collection';
+import * as d3scale from 'd3-scale';
+import * as d3shape from 'd3-shape';
+
 import constants from './constants';
 import addYears from './year-chooser';
 import labeler from './label-shifter';
 import divisionSorter from './division-sorter';
 
-var body = d3.select("body");
-var fullWidth = 400,
+if (process.env.NODE_ENV !== 'production') {
+  // Make webpack watch for changes to index.html.
+  // http://stackoverflow.com/a/33995496/1934
+  require('../../index.html');
+}
+
+let body = d3selection.select("body");
+let fullWidth = 400,
     fullHeight = fullWidth / 2,
     margin = {top: 20, right: 175, bottom: 10, left: 10},
     width = fullWidth - margin.left - margin.right,
     height = fullHeight - margin.top - margin.bottom;
 // Various x coordinate starting points to lay out different pieces of text.
-var winLossX = 51;
-var homeX = 88;
-var roadX = 120;
-var pctX = 152;
-var defaultSize = { width: fullWidth, height: fullHeight };
-var bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
-var hiddenSize = { width: 0 }
-var bigChart, hiddenChart;
-var year = 2015;
-var query = window.location.search.slice(1).split('=');
+let winLossX = 51;
+let homeX = 88;
+let roadX = 120;
+let pctX = 152;
+let defaultSize = { width: fullWidth, height: fullHeight };
+let bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
+let hiddenSize = { width: 0 }
+let bigChart, hiddenChart;
+let year = 2017;
+let query = window.location.search.slice(1).split('=');
 if ( query.length ) {
-  var yearIndex = -1;
+  let yearIndex = -1;
   query.forEach((p, i) => {
     if ( p === 'year' ) {
       yearIndex = i;
@@ -31,15 +44,15 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-var availableYears = d3.range(1919, new Date().getFullYear());
+let availableYears = d3array.range(1919, 2018);
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
-d3.json('seasons-data/' + year + '.json', (error, data) => {
+d3request.json('seasons-data/' + year + '.json', (error, data) => {
   if (error) { throw error; }
 
   // Group data by division.
-  var divisions = d3.nest()
+  let divisions = d3collection.nest()
     .key((d) => d.league)
     .entries(data);
 
@@ -47,17 +60,17 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   divisions = divisionSorter(divisions, constants);
 
   // Need some scales.
-  var x = d3.scale.linear()
-    .domain([0, d3.max(data, (d) => d.games)])
+  let x = d3scale.scaleLinear()
+    .domain([0, d3array.max(data, (d) => d.games)])
     .range([0, width]);
-  var min = d3.min(data, (d) => d3.min(d.results));
-  var max = d3.max(data, (d) => d3.max(d.results));
-  var y = d3.scale.linear()
+  let min = d3array.min(data, (d) => d3array.min(d.results));
+  let max = d3array.max(data, (d) => d3array.max(d.results));
+  let y = d3scale.scaleLinear()
     .domain([min, max])
     .range([height, 0]);
 
   // Path generator.
-  var line = d3.svg.line()
+  let line = d3shape.line()
     .x((d, i) => x(i))
     .y((d, i) => y(d));
 
@@ -65,7 +78,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   divisions = labeler(divisions, y);
 
   // Make one chart (svg) per division.
-  var charts = body.selectAll('svg')
+  let charts = body.selectAll('svg')
     .data(divisions)
     .enter()
     .append('svg')
@@ -117,7 +130,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('d', (d) => line(d.results))
     .style('stroke', (d) => constants.teamColors[d.abbreviation]);
   // Add labels for lines.
-  var labels = charts.selectAll('g')
+  let labels = charts.selectAll('g')
     .data((d) => d.values)
     .enter()
     .append('g')
@@ -127,8 +140,8 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   labels.append('text')
     .attr('x', (d) => {
       // Right-align final result (number like -12, 2, 34, etc.).
-      var result = d.results[d.results.length-1];
-      var position = ( result <= -10 ) ? 0 : 
+      let result = d.results[d.results.length-1];
+      let position = ( result <= -10 ) ? 0 : 
         ( result < 0 ) ? 5 :
         ( result < 10 ) ? 10 : 5;
       return position;
@@ -145,7 +158,7 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
   // W-L record.
   labels.append('text')
     .attr('x', (d) => {
-      var pad = 0;
+      let pad = 0;
       if ( d.wins > 99 || d.losses > 99 ) {
         pad = -5;
       }
@@ -174,25 +187,25 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
     .text((d) => (d.wins / d.games).toFixed(3).slice(1));
 
   // See if charts needs to be scaled up or down.
-  let bodyWidth = d3.select('body').style('width').replace('px', '');
+  let bodyWidth = d3selection.select('body').style('width').replace('px', '');
   if ( bodyWidth % 400 !== 0 ) {
     // We are not on a wide screen.
     let scaledHeight = (200 * (bodyWidth / fullHeight)) / 2;
     // Scale svg's appropriately.
-    d3.selectAll('svg').transition().attr({
+    d3selection.selectAll('svg').transition().attr({
       width: bodyWidth,
       height: scaledHeight
     });
     // Take off the click handler that does zoom in/out.
-    d3.selectAll('svg').on('click', null);
+    d3selection.selectAll('svg').on('click', null);
   }
-  d3.selectAll('svg').style('opacity', 1);
+  d3selection.selectAll('svg').style('opacity', 1);
 
   let shrink = (e, callback, next) => {
     if ( hiddenChart ) {
-      d3.select(hiddenChart).transition().attr(defaultSize);
+      d3selection.select(hiddenChart).transition().attr(defaultSize);
     }
-    d3.select(e).transition().attr(defaultSize).each('end', () => {
+    d3selection.select(e).transition().attr(defaultSize).each('end', () => {
       bigChart = hiddenChart = null;
       if ( callback ) {
         callback(next);
@@ -212,9 +225,9 @@ d3.json('seasons-data/' + year + '.json', (error, data) => {
       hiddenChart = e.nextSibling;
     }
     bigChart = e;
-    d3.select(e).transition().attr(bigSize);
+    d3selection.select(e).transition().attr(bigSize);
     if ( hiddenChart ) {
-      d3.select(hiddenChart).transition().attr(hiddenSize);
+      d3selection.select(hiddenChart).transition().attr(hiddenSize);
     }
   }
 

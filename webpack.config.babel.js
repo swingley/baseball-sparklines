@@ -1,7 +1,14 @@
-var webpack = require("webpack");
+import webpack from "webpack";
 
-module.exports = {
-  entry: "./src/js/run.js",
+let getEntrySources = (sources) => {
+  if ( process.env.NODE_ENV === 'development' ) {
+    sources.push('webpack-dev-server/client?http://localhost:8080');
+  }
+  return sources;
+}
+
+export default {
+  entry: getEntrySources(["./src/js/run.js"]),
   output: {
     path: __dirname,
     filename: "bundle.js"
