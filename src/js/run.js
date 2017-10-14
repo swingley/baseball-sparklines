@@ -4,6 +4,7 @@ import * as d3request from 'd3-request';
 import * as d3collection from 'd3-collection';
 import * as d3scale from 'd3-scale';
 import * as d3shape from 'd3-shape';
+import 'd3-transition';
 
 import constants from './constants';
 import addYears from './year-chooser';
@@ -27,9 +28,6 @@ let winLossX = 51;
 let homeX = 88;
 let roadX = 120;
 let pctX = 152;
-let defaultSize = { width: fullWidth, height: fullHeight };
-let bigSize = { width: fullWidth * 2, height: fullHeight * 2 };
-let hiddenSize = { width: 0 }
 let bigChart, hiddenChart;
 let year = 2017;
 let query = window.location.search.slice(1).split('=');
@@ -88,6 +86,9 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('preserveAspectRatio', 'none')
     .attr('data-division', (d) => d.key)
     .on('click', function() {
+      console.log('chart click', this);
+      console.log('...width...', parseInt(body.style("width").replace("px", "")))
+      console.log('bigChart', bigChart);
       // Use a function expression because `this` is the svg element.
       // In an arrow function, `this` is undefined.
 
@@ -203,14 +204,21 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
 
   let shrink = (e, callback, next) => {
     if ( hiddenChart ) {
-      d3selection.select(hiddenChart).transition().attr(defaultSize);
+      d3selection.select(hiddenChart)
+        .transition()
+        .style('width', fullWidth)
+        .style('height', fullHeight);
     }
-    d3selection.select(e).transition().attr(defaultSize).each('end', () => {
-      bigChart = hiddenChart = null;
-      if ( callback ) {
-        callback(next);
-      }
-    });
+    d3selection.select(e)
+      .transition()
+      .style('width', fullWidth)
+      .style('height', fullHeight)
+      .on('end', () => {
+        bigChart = hiddenChart = null;
+        if ( callback ) {
+          callback(next);
+        }
+      });
   }
 
   let grow = (e) => {
@@ -225,9 +233,12 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
       hiddenChart = e.nextSibling;
     }
     bigChart = e;
-    d3selection.select(e).transition().attr(bigSize);
+    d3selection.select(e)
+      .transition()
+      .style('width', fullWidth * 2)
+      .style('height', fullHeight * 2);
     if ( hiddenChart ) {
-      d3selection.select(hiddenChart).transition().attr(hiddenSize);
+      d3selection.select(hiddenChart).transition().style('width', '0');
     }
   }
 
