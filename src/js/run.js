@@ -42,7 +42,7 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-let availableYears = d3array.range(1919, 2018);
+let availableYears = d3array.range(1919, 2019);
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
@@ -142,7 +142,7 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('x', (d) => {
       // Right-align final result (number like -12, 2, 34, etc.).
       let result = d.results[d.results.length-1];
-      let position = ( result <= -10 ) ? 0 : 
+      let position = ( result <= -10 ) ? 0 :
         ( result < 0 ) ? 5 :
         ( result < 10 ) ? 10 : 5;
       return position;
