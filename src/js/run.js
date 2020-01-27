@@ -42,7 +42,7 @@ if ( query.length ) {
     year = query[yearIndex+1];
   }
 }
-let availableYears = d3array.range(1919, 2019);
+let availableYears = d3array.range(1919, 2020);
 addYears(availableYears, body);
 body.append("h1").text("MLB Sparklines:  " + year);
 
