@@ -168,18 +168,18 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
     .text((d) => d.wins + "–" + d.losses)
-  // Home W-L record.
+  // Home W-L record. Home and road wins/losses are flipped in the data.
   labels.append('text')
     .attr('x', homeX)
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
-    .text((d) => d.winsHome + "–" + d.lossesHome)
+    .text((d) => d.winsRoad + "–" + d.lossesRoad)
   // Road W-L record.
   labels.append('text')
     .attr('x', roadX)
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
-    .text((d) => d.winsRoad + "–" + d.lossesRoad)
+    .text((d) => d.winsHome + "–" + d.lossesHome)
   // Winning percentage.
   labels.append('text')
     .attr('x', pctX)
