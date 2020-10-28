@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('../../index.html');
 }
 
-let body = d3selection.select("body");
+let body = d3selection.select('body');
 let fullWidth = 400,
     fullHeight = fullWidth / 2,
     margin = {top: 20, right: 175, bottom: 10, left: 10},
@@ -44,7 +44,7 @@ if ( query.length ) {
 }
 let availableYears = d3array.range(1919, 2020);
 addYears(availableYears, body);
-body.append("h1").text("MLB Sparklines:  " + year);
+body.append('h1').text('MLB Sparklines:  ' + year);
 
 d3request.json('seasons-data/' + year + '.json', (error, data) => {
   if (error) { throw error; }
@@ -86,15 +86,12 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     .attr('preserveAspectRatio', 'none')
     .attr('data-division', (d) => d.key)
     .on('click', function() {
-      console.log('chart click', this);
-      console.log('...width...', parseInt(body.style("width").replace("px", "")))
-      console.log('bigChart', bigChart);
       // Use a function expression because `this` is the svg element.
       // In an arrow function, `this` is undefined.
 
       // Only shrink when there are two charts per line.
-      if ( parseInt(body.style("width").replace("px", "")) > 400 ) {
-        ( this === bigChart ) ? shrink(this) : grow(this);
+      if (parseInt(body.style('width').replace('px', '')) > 400) {
+        (this === bigChart) ? shrink(this) : grow(this);
       }
     })
     .append('g')
@@ -167,19 +164,19 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     })
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
-    .text((d) => d.wins + "–" + d.losses)
+    .text((d) => d.wins + '–' + d.losses)
   // Home W-L record. Home and road wins/losses are flipped in the data.
   labels.append('text')
     .attr('x', homeX)
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
-    .text((d) => d.winsRoad + "–" + d.lossesRoad)
+    .text((d) => d.winsRoad + '–' + d.lossesRoad)
   // Road W-L record.
   labels.append('text')
     .attr('x', roadX)
     .attr('y', (d) => d.labelPosition)
     .attr('class', 'team')
-    .text((d) => d.winsHome + "–" + d.lossesHome)
+    .text((d) => d.winsHome + '–' + d.lossesHome)
   // Winning percentage.
   labels.append('text')
     .attr('x', pctX)
@@ -206,13 +203,13 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     if ( hiddenChart ) {
       d3selection.select(hiddenChart)
         .transition()
-        .style('width', fullWidth)
-        .style('height', fullHeight);
+        .style('width', `${fullWidth}px`)
+        .style('height', `${fullHeight}px`);
     }
     d3selection.select(e)
       .transition()
-      .style('width', fullWidth)
-      .style('height', fullHeight)
+      .style('width', `${fullWidth}px`)
+      .style('height', `${fullHeight}px`)
       .on('end', () => {
         bigChart = hiddenChart = null;
         if ( callback ) {
@@ -235,8 +232,8 @@ d3request.json('seasons-data/' + year + '.json', (error, data) => {
     bigChart = e;
     d3selection.select(e)
       .transition()
-      .style('width', fullWidth * 2)
-      .style('height', fullHeight * 2);
+      .style('width', `${fullWidth * 2}px`)
+      .style('height', `${fullHeight * 2}px`);
     if ( hiddenChart ) {
       d3selection.select(hiddenChart).transition().style('width', '0');
     }
