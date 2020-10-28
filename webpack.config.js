@@ -1,22 +1,15 @@
-var webpack = require("webpack");
+var webpack = require('webpack')
 
 module.exports = {
-  entry: "./src/js/run.js",
+  entry: './src/js/run.js',
   output: {
     path: __dirname,
-    filename: "bundle.js"
+    filename: 'bundle.js'
   },
   module: {
-    loaders: [{
+    rules: [{
       test: /\.html$/,
-      loader: "raw-loader"
-    }, {
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: "babel-loader"
+      use: 'raw-loader'
     }]
-  },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({minimize: true})
-  ]
-};
+  }
+}
